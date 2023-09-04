@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <title>webgl</title>
+  </head>
+  <body>
+    <canvas id="canvas" width="1216" height="1334"></canvas>
+    <script id="vertex-data" type="text">
+      attribute vec4 vertex_points;
+      void main() {
+      gl_Position = vertex_points;
+      }
+    </script>
+    <script id="fragment-data" type="text">
+      precision mediump float;
+      void main() {
+      gl_FragColor = vec4(0.5, 1.0, 0, 0.5);
+      }
+    </script>
+
+    <script src="script.js" type="text/javascript"></script>
+  </body>
+</html>
