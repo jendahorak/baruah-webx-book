@@ -14,30 +14,48 @@ function main() {
 
   /*========== Define and Store the Geometry ==========*/
   /*====== Define front-face vertices ======*/
-  const firstSquare = [
+  const squares = [
     //front face
     -0.3, -0.3, -0.3, 0.3, -0.3, -0.3, 0.3, 0.3, -0.3, -0.3, -0.3, -0.3, -0.3, 0.3, -0.3, 0.3, 0.3, -0.3,
+    // back face
+    -0.2, -0.2, 0.3, 0.4, -0.2, 0.3, 0.4, 0.4, 0.3, -0.2, -0.2, 0.3, -0.2, 0.4, 0.3, 0.4, 0.4, 0.3,
+  ];
+
+  const squareColors = [
+    0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0,
+    1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0,
   ];
 
   /*====== Define front-face buffer ======*/
   // buffer
   const origBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, origBuffer);
-  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(firstSquare), gl.STATIC_DRAW);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(squares), gl.STATIC_DRAW);
+
+  const colorBuffer = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(squareColors), gl.STATIC_DRAW);
 
   /*========== Shaders ==========*/
   /*====== Define shader source ======*/
   const vsSource = /*glsl*/ `
     attribute vec4 aPosition;
+    attribute vec4 aVertexColor;
+
+    varying lowp vec4 vColor;
+
 
     void main(){
       gl_Position = aPosition;
+      vColor = aVertexColor;
     }  
   `;
 
   const fsSource = /*glsl*/ `
+    varying lowp vec4 vColor;
+
     void main() {
-    gl_FragColor = vec4(1, 0, 0, 1);
+    gl_FragColor = vColor;
   }
 `;
 
@@ -48,14 +66,16 @@ function main() {
   gl.shaderSource(fragmentShader, fsSource);
   /*====== Compile shaders ======*/
   gl.compileShader(vertexShader);
-  gl.compileShader(fragmentShader);
-
   if (!gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS)) {
-    console.error('Vertex shader compilation failed:', gl.getShaderInfoLog(vertexShader));
+    alert('An error occurred compiling the shaders: ' + gl.getShaderInfoLog(vertexShader));
+    gl.deleteShader(vertexShader);
+    return null;
   }
-
+  gl.compileShader(fragmentShader);
   if (!gl.getShaderParameter(fragmentShader, gl.COMPILE_STATUS)) {
-    console.error('Fragment shader compilation failed:', gl.getShaderInfoLog(fragmentShader));
+    alert('An error occurred compiling the shaders: ' + gl.getShaderInfoLog(fragmentShader));
+    gl.deleteShader(fragmentShader);
+    return null;
   }
 
   /*====== Create shader program ======*/
@@ -79,14 +99,22 @@ function main() {
   gl.vertexAttribPointer(posAttribLocation, 3, gl.FLOAT, false, 0, 0);
   gl.enableVertexAttribArray(posAttribLocation);
 
+  const colorAttribLocation = gl.getAttribLocation(program, 'aVertexColor');
+  gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+  gl.vertexAttribPointer(colorAttribLocation, 4, gl.FLOAT, false, 0, 0);
+  gl.enableVertexAttribArray(colorAttribLocation);
+
   /*========== Drawing ========== */
   gl.clearColor(1, 1, 1, 1);
-  gl.clear(gl.COLOR_BUFFER_BIT);
+  gl.enable(gl.DEPTH_TEST);
+  gl.depthFunc(gl.LEQUAL);
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DETPH_BUFFER_BIT);
+
   /*====== Draw the points to the screen ======*/
 
-  const mode = gl.LINE_LOOP;
+  const mode = gl.TRIANGLES;
   const first = 0;
-  const count = 6;
+  const count = 12;
   gl.drawArrays(mode, first, count);
 }
 
