@@ -34,10 +34,18 @@ function main() {
     const farPlane = 100;
     const camera = new THREE.PerspectiveCamera(angleOfView, aspectRatio, nearPlane, farPlane)
     camera.position.set(0,8,30);
+    
+
 
     
     // create the scene
     const scene = new THREE.Scene();   
+    scene.background = new THREE.Color(0.3,0.5,0.8)
+    
+
+    const fog = new THREE.Fog('gray', 0, 100)
+    scene.fog = fog
+
          
        
     // add fog later...
@@ -48,10 +56,24 @@ function main() {
 
     const textureLoader = new THREE.TextureLoader();
     const planeTextureMap = textureLoader.load('./textures/pebbles.jpg')
+    planeTextureMap.wrapS = THREE.RepeatWrapping;
+    planeTextureMap.wrapT = THREE.RepeatWrapping;
+    planeTextureMap.repeat.set(16, 16);
+    planeTextureMap.minFilter = THREE.NearestFilter
+    planeTextureMap.anisotropy = gl.capabilities.getMaxAnisotropy();
+
+
+
+    const planeNormalMap = textureLoader.load('./textures/pebbles_normal.png')
+    planeNormalMap.wrapS = THREE.RepeatWrapping
+    planeNormalMap.wrapT = THREE.RepeatWrapping
+    planeNormalMap.minFilter = THREE.NearestFilter
+    planeNormalMap.repeat.set(16,16)
 
     const planeMaterial = new THREE.MeshLambertMaterial({
         map:planeTextureMap,
-        side: THREE.DoubleSide
+        side: THREE.DoubleSide,
+        normalMap: planeNormalMap
     })
 
 
@@ -80,9 +102,20 @@ function main() {
     const sphereWidthSegments = 32
     const heightSegments = 16
 
-    const sphereGeometry = new THREE.SphereGeometry(sphereRadius, sphereWidthSegments, heightSegments)
-    const sphereMaterial = new THREE.MeshLambertMaterial( { color: 'tan' } );
     
+    const sphereNormalMap = textureLoader.load('./textures/sphere_normal.png')
+    sphereNormalMap.werapS = THREE.RepeatWrapping;
+    sphereNormalMap.werapT = THREE.RepeatWrapping;
+    
+    const sphereGeometry = new THREE.SphereGeometry(sphereRadius, sphereWidthSegments, heightSegments)
+    const sphereMaterial = new THREE.MeshStandardMaterial({
+        color: 'tan',
+        normalMap: sphereNormalMap
+    } );
+    
+
+
+
     const sphere = new THREE.Mesh( sphereGeometry,sphereMaterial ); 
     sphere.position.set(-sphereRadius, sphereRadius , 0);
     scene.add( sphere );
@@ -94,7 +127,7 @@ function main() {
 
     // LIGHTS
     const color = 0xffffff;
-    const intensity = 1;
+    const intensity = 2;
     const light = new THREE.DirectionalLight(color, intensity)
     light.position.set(0,30,30)
     light.target = plane;
@@ -102,10 +135,17 @@ function main() {
     scene.add(light)
 
 
+    const ambientColor = 0xffffff;
+    const ambientIntesity = 0.2;
+    const ambientLight = new THREE.AmbientLight(ambientColor, ambientIntesity)
+    scene.add(ambientLight)
+
+
     // MESH
     // DRAW
-    function draw(){
-        
+    function draw(time){
+        time *= 0.001
+               
 
         sphere.rotation.x += 0.01;
         sphere.rotation.y += 0.01;
@@ -123,6 +163,10 @@ function main() {
             camera.aspect = canvas.clientWidth / canvas.clientHeight
             camera.updateProjectionMatrix();
         }
+
+
+        light.position.x = 20*Math.cos(time);
+        light.position.y = 20*Math.sin(time);
 
         gl.render(scene, camera)
 
