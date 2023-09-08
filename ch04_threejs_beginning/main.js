@@ -37,45 +37,80 @@ function main() {
 
     
     // create the scene
-    const scene = new THREE.Scene();
-          
-    
+    const scene = new THREE.Scene();   
+         
        
-    
-    
     // add fog later...
     // GEOMETRY
 
-       
-        // Create the upright plane
-        // Create the cube
+    
+    // Create the upright plane
+
+    const textureLoader = new THREE.TextureLoader();
+    const planeTextureMap = textureLoader.load('./textures/pebbles.jpg')
+
+    const planeMaterial = new THREE.MeshLambertMaterial({
+        map:planeTextureMap,
+        side: THREE.DoubleSide
+    })
+
+
+    const plaeWidth = 256
+    const planeHeight = 128
+    const planeGeometry = new THREE.PlaneGeometry(plaeWidth, planeHeight)
+
+    const plane = new THREE.Mesh(planeGeometry, planeMaterial)
+    plane.rotation.x = Math.PI / 2
+    scene.add(plane);
+
+
+    // Create the cube
     const cubeSize = 4;
     const cubeGeometry = new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize)
-    
-
-        // Create the Sphere
-    // MATERIALS and TEXTURES
-
     const cubeMaterial = new THREE.MeshPhongMaterial({
         color: 'pink'
     })
+    const cube = new THREE.Mesh(cubeGeometry, cubeMaterial)
+    cube.position.set(cubeSize, cubeSize, 0)
+    scene.add(cube)
+
+    
+    // Create the Sphere
+    const sphereRadius = 3
+    const sphereWidthSegments = 32
+    const heightSegments = 16
+
+    const sphereGeometry = new THREE.SphereGeometry(sphereRadius, sphereWidthSegments, heightSegments)
+    const sphereMaterial = new THREE.MeshLambertMaterial( { color: 'tan' } );
+    
+    const sphere = new THREE.Mesh( sphereGeometry,sphereMaterial ); 
+    sphere.position.set(-sphereRadius, sphereRadius , 0);
+    scene.add( sphere );
+
+    // MATERIALS and TEXTURES
+
+
+
 
     // LIGHTS
     const color = 0xffffff;
     const intensity = 1;
     const light = new THREE.DirectionalLight(color, intensity)
+    light.position.set(0,30,30)
+    light.target = plane;
+    scene.add(light.target)
     scene.add(light)
 
 
     // MESH
-    const cube = new THREE.Mesh(cubeGeometry, cubeMaterial)
-    cube.position.set(cubeSize, cubeSize, 0)
-    scene.add(cube)
-
-
-
     // DRAW
     function draw(){
+        
+
+        sphere.rotation.x += 0.01;
+        sphere.rotation.y += 0.01;
+        sphere.rotation.y += 0.01;
+
 
         cube.rotation.x += 0.01;
         cube.rotation.y += 0.01;
