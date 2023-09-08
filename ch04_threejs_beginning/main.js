@@ -76,7 +76,6 @@ function main() {
         normalMap: planeNormalMap
     })
 
-
     const plaeWidth = 256
     const planeHeight = 128
     const planeGeometry = new THREE.PlaneGeometry(plaeWidth, planeHeight)
@@ -101,8 +100,7 @@ function main() {
     const sphereRadius = 3
     const sphereWidthSegments = 32
     const heightSegments = 16
-
-    
+  
     const sphereNormalMap = textureLoader.load('./textures/sphere_normal.png')
     sphereNormalMap.werapS = THREE.RepeatWrapping;
     sphereNormalMap.werapT = THREE.RepeatWrapping;
@@ -112,18 +110,12 @@ function main() {
         color: 'tan',
         normalMap: sphereNormalMap
     } );
-    
-
-
-
+  
     const sphere = new THREE.Mesh( sphereGeometry,sphereMaterial ); 
     sphere.position.set(-sphereRadius, sphereRadius , 0);
     scene.add( sphere );
 
     // MATERIALS and TEXTURES
-
-
-
 
     // LIGHTS
     const color = 0xffffff;
@@ -178,7 +170,5 @@ function main() {
 
     // UPDATE RESIZE
    }
-
-
 
    main()
