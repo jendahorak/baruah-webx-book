@@ -1,16 +1,18 @@
-import * as THREE from 'three';
-
+// global scene values
 var btn, gl, glCanvas, camera, scene, renderer, cube;
 
+// global xr value
 var xrSession = null;
 
 loadScene();
 init();
 
 function loadScene() {
+  // setup WebGL
   glCanvas = document.createElement('canvas');
-  gl = glCanvas.getContext('webgl2', { antialias: true });
+  gl = glCanvas.getContext('webgl', { antialias: true });
 
+  // setup Three.js scene
   camera = new THREE.PerspectiveCamera(
     70,
     window.innerWidth / 2 / window.innerHeight / 2,
@@ -30,6 +32,7 @@ function loadScene() {
   cube.position.y = 0.2;
   scene.add(cube);
 
+  // setup Three.js WebGL renderer
   renderer = new THREE.WebGLRenderer({
     canvas: glCanvas,
     context: gl,
@@ -43,17 +46,17 @@ function loadScene() {
 function init() {
   navigator.xr
     .isSessionSupported('immersive-ar')
-    .then((isSupported) => {
-      if (isSupported) {
+    .then((supported) => {
+      if (supported) {
         btn = document.createElement('button');
         btn.addEventListener('click', onRequestSession);
-        btn.innerHTML = 'Enter AR';
+        btn.innerHTML = 'Enter XR';
         var header = document.querySelector('header');
         header.appendChild(btn);
       } else {
-        navigator.xr.isSessionSupported('inline').then((isSupported) => {
-          if (isSupported) {
-            console.log('inline suported');
+        navigator.xr.isSessionSupported('inline').then((supported) => {
+          if (supported) {
+            console.log('inline session supported');
           } else {
             console.log('inline not supported');
           }
@@ -61,7 +64,7 @@ function init() {
       }
     })
     .catch((reason) => {
-      console.log(`WebXR not supported: ${reason}`);
+      console.log('WebXR not supported: ' + reason);
     });
 }
 
@@ -71,11 +74,12 @@ function onRequestSession() {
     .requestSession('immersive-ar', { requiredFeatures: ['viewer', 'local'] })
     .then(onSessionStarted)
     .catch((reason) => {
-      console.log(`request disabled ${reason.log}`);
+      console.log('request disabled: ' + reason);
     });
 }
+
 function onSessionStarted(session) {
-  console.log('starting a session');
+  console.log('starting session');
   btn.removeEventListener('click', onRequestSession);
   btn.addEventListener('click', endXRSession);
   btn.innerHTML = 'STOP AR';
@@ -97,6 +101,7 @@ function setupWebGLLayer() {
 function animate() {
   renderer.setAnimationLoop(render);
 }
+
 function render(time) {
   if (!xrSession) {
     renderer.clear(true, true, true);
@@ -106,6 +111,7 @@ function render(time) {
     cube.translateY((0.2 * Math.sin(time)) / 100);
     cube.rotateY(Math.PI / 180);
     renderer.render(scene, camera);
+    //renderer.render(scene, camera);
   }
 }
 
@@ -115,9 +121,10 @@ function endXRSession() {
     xrSession.end().then(onSessionEnd);
   }
 }
+
 function onSessionEnd() {
   xrSession = null;
-  console.log('session ended ');
+  console.log('session ended');
   btn.innerHTML = 'START AR';
   btn.removeEventListener('click', endXRSession);
   btn.addEventListener('click', onRequestSession);
