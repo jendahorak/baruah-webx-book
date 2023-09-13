@@ -27,7 +27,9 @@ function loadScene() {
   var geometry = new THREE.BoxGeometry(0.2, 0.2, 0.2);
   var material = new THREE.MeshPhongMaterial({ color: 0x89cff0 });
   cube = new THREE.Mesh(geometry, material);
-  cube.position.y = 0.2;
+  cube.position.y = 0.1;
+  cube.position.z = -2;
+  cube.position.x = 0;
   scene.add(cube);
 
   renderer = new THREE.WebGLRenderer({
@@ -103,8 +105,8 @@ function render(time) {
     return;
   } else {
     time *= 0.001;
-    cube.translateY((0.2 * Math.sin(time)) / 100);
-    cube.rotateY(Math.PI / 180);
+    // cube.translateY((0.2 * Math.sin(time)) / 100);
+    // cube.rotateY(Math.PI / 180);
     renderer.render(scene, camera);
   }
 }
