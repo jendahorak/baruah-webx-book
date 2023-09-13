@@ -1,8 +1,12 @@
 import * as THREE from 'three';
-
+// global scene vals
 var btn, gl, glCanvas, camera, scene, renderer, cube;
 
+// global xr vals
 var xrSession = null;
+var xrViewerPose;
+var hitTestSource = null;
+var hitTestSourceRequested = false;
 
 loadScene();
 init();
@@ -23,6 +27,12 @@ function loadScene() {
   var light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
   light.position.set(0.5, 1, 0.25);
   scene.add(light);
+
+  controller = renderer.xr.getController(0);
+  controller.addEventListener('select', onSelect);
+  scene.add(controller);
+
+  // TODO - continue page 241
 
   var geometry = new THREE.BoxGeometry(0.2, 0.2, 0.2);
   var material = new THREE.MeshPhongMaterial({ color: 0x89cff0 });
