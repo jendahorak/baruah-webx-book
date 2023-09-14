@@ -49,4 +49,13 @@ Systems
 - , a system provides global scope, services, and management to 
 classes of components
 - eg. Asset Manager - provides func for preloading assets like images and models
-- 
+
+
+
+Cusom components
+schema -  The schema keyword defines the attribute of 
+the custom component which will hold as key/value pairs the data of the 
+component
+
+init - behaviour that will happen at the initialisation
+update - behaviour that happens when component or its data undergoes a change

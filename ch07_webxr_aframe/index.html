@@ -6,48 +6,109 @@
     <title>Aframe barebones</title>
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
   </head>
-  <body>
-    <a-scene>
-      <a-assets>
-        <img id="brick" src="./textures/brick_mat.jpg" />
-      </a-assets>
-      <a-box
-        position="-0.5 1.5 -0.5"
-        material="src: #brick; roughness: 5;"
-        depth="0.5"
-        height="0.5"
-        width="0.5"
-      ></a-box>
-      <a-sky color="#87CEEB"></a-sky>
 
+  <style>
+    .aframebox {
+      height: 500px;
+      width: 500px;
+    }
+  </style>
+  <body>
+    <header>Title</header>
+    <a-scene class="aframebox" embedded>
+      <a-camera toggle-wsad></a-camera>
+      <a-plane
+        id="ground"
+        height="50"
+        width="50"
+        rotation="-90 0 0"
+        texture-loader="src: ./textures/grass.jpg; normal: true; normal_src: ./textures/grass-nm.jpg"
+      ></a-plane>
       <a-box
-        id="cubrick"
         position="0.3 1.5 -0.5"
         depth="0.5"
         height="0.5"
         width="0.5"
-      >
-      </a-box>
-      <a-sky color="#87CEEB"></a-sky>
+        texture-loader="src: ./textures/brick_mat.jpg"
+      ></a-box>
+      <a-sky transparent="true"></a-sky>
     </a-scene>
+    <button id="enable-movement">Enable WSAD movement</button>
   </body>
 
   <script defer type="text/javascript">
-    const texture = new THREE.TextureLoader().load('./textures/brick_mat.jpg');
+    let button_wsad = document.querySelector('#enable-movement');
 
-    texture.anisotropy = 16;
-    texture.minFilter = THREE.NearestFilter;
-    texture.maxFilter = THREE.NearestFilter;
+    AFRAME.registerComponent('toggle-wsad', {
+      init: function () {
+        // Add a click event listener to the button
+        const camera = this.el;
+        const wasdControls = camera.components['wasd-controls'];
+        console.log(wasdControls);
+        wasdControls.data.fly = true;
+        console.log(wasdControls.data.enabled);
+        wasdControls.data.enabled = false;
+        console.log(wasdControls.data.enabled);
 
-    const material_tex = new THREE.MeshBasicMaterial({ map: texture });
-    const box = document.querySelector('#cubrick');
+        button_wsad.addEventListener('click', () => {
+          // Get the camera element and the wasd-controls component
 
-    box.addEventListener('loaded', () => {
-      const mesh = box.getObject3D('mesh');
-      console.log('material_tex: ', material_tex);
-      console.log('box: ', box);
-      mesh.material = material_tex;
-      console.log('mesh: ', mesh);
+          // Toggle the enabled state of the wasd-controls
+          wasdControls.data.enabled = !wasdControls.data.enabled;
+
+          // Display a message based on the state
+          if (wasdControls.data.enabled) {
+            console.log('WSAD movement is enabled');
+          } else {
+            console.log('WSAD movement is disabled');
+          }
+        });
+      },
+
+      update: function () {},
+    });
+
+    AFRAME.registerComponent('texture-loader', {
+      schema: {
+        src: {},
+        material_tex: {},
+        mesh: {},
+        texture: {},
+        normal: { type: 'boolean' },
+        normal_src: {},
+      },
+      init: function () {
+        // console.log('initialized');
+      },
+      update: function () {
+        const el = this.el;
+        console.dir(el);
+
+        this.data.texture = new THREE.TextureLoader().load(this.data.src);
+        this.data.texture.anisotropy = 16;
+        this.data.texture.minFilter = THREE.NearestFilter;
+        this.data.texture.maxFilter = THREE.NearestFilter;
+
+        this.data.material_tex = new THREE.MeshLambertMaterial({
+          map: this.data.texture,
+        });
+
+        this.data.mesh = el.getObject3D('mesh');
+        // console.log(this.data.mesh);
+        // console.log(el.object3D.children[0]);
+        // console.log(this.data.mesh === el.object3D.children[0]); // returns true
+
+        this.data.mesh.material = this.data.material_tex;
+
+        if (this.data.normal === true) {
+          //   console.log('normal true');
+          this.data.normal_map = new THREE.TextureLoader().load(
+            this.data.normal_src
+          );
+          this.data.mesh.material.normalMap = this.data.normal_map;
+          this.data.mesh.receiveShadow = true;
+        }
+      },
     });
   </script>
 </html>
