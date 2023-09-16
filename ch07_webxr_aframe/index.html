@@ -7,16 +7,10 @@
     <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
   </head>
 
-  <style>
-    .aframebox {
-      height: 500px;
-      width: 500px;
-    }
-  </style>
+  <style></style>
   <body>
-    <header>Title</header>
-    <a-scene class="aframebox" embedded>
-      <a-camera toggle-wsad></a-camera>
+    <a-scene>
+      <!-- <a-camera toggle-wsad></a-camera> -->
       <a-plane
         id="ground"
         height="50"
@@ -24,31 +18,22 @@
         rotation="-90 0 0"
         texture-loader="src: ./textures/grass.jpg; normal: true; normal_src: ./textures/grass-nm.jpg"
       ></a-plane>
-      <a-box
-        position="0.3 1.5 -0.5"
-        depth="0.5"
-        height="0.5"
-        width="0.5"
-        texture-loader="src: ./textures/brick_mat.jpg"
-      ></a-box>
+      <a-box position="0.3 1.5 -0.5" depth="0.5" height="0.5" width="0.5" texture-loader="src: ./textures/brick_mat.jpg"></a-box>
       <a-sky transparent="true"></a-sky>
     </a-scene>
-    <button id="enable-movement">Enable WSAD movement</button>
+    <!-- <button id="enable-movement">Enable WSAD movement</button> -->
   </body>
 
   <script defer type="text/javascript">
-    let button_wsad = document.querySelector('#enable-movement');
+    // let button_wsad = document.querySelector('#enable-movement');
 
     AFRAME.registerComponent('toggle-wsad', {
       init: function () {
         // Add a click event listener to the button
         const camera = this.el;
         const wasdControls = camera.components['wasd-controls'];
-        console.log(wasdControls);
         wasdControls.data.fly = true;
-        console.log(wasdControls.data.enabled);
         wasdControls.data.enabled = false;
-        console.log(wasdControls.data.enabled);
 
         button_wsad.addEventListener('click', () => {
           // Get the camera element and the wasd-controls component
@@ -102,9 +87,7 @@
 
         if (this.data.normal === true) {
           //   console.log('normal true');
-          this.data.normal_map = new THREE.TextureLoader().load(
-            this.data.normal_src
-          );
+          this.data.normal_map = new THREE.TextureLoader().load(this.data.normal_src);
           this.data.mesh.material.normalMap = this.data.normal_map;
           this.data.mesh.receiveShadow = true;
         }
@@ -112,4 +95,3 @@
     });
   </script>
 </html>
-s
