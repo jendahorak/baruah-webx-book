@@ -59,3 +59,16 @@ component
 
 init - behaviour that will happen at the initialisation
 update - behaviour that happens when component or its data undergoes a change
+
+## Physics and User Interaction in A-frame
+
+entities wrap components that create compelx object in 3D scene.
+
+out of the box entities (primitives)
+entities of our own composed of custom components build with aframe
+extensibility of A-frame is not libmited to entities and compoentns
+
+Game Engines vs Three + Aframe
+
+- game engines inherently have physics systems in them (kinematics)
+- extensibility of Aframe due to others peoples work is good

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <title>Aframe barebones</title>
+  </head>
+
+  <style></style>
+  <body>
+    <a-scene fog="type: exponential; density: 0.1; color: #cce0ff">
+      <!-- <a-camera toggle-wsad></a-camera> -->
+      <a-plane
+        id="ground"
+        height="50"
+        width="50"
+        rotation="-90 0 0"
+        texture-loader="src: ./textures/grass.jpg; normal: true; normal_src: ./textures/grass-nm.jpg; wrap: true;repeat:true"
+      ></a-plane>
+      <a-box position="0.3 1.5 -0.5" depth="0.5" height="0.5" width="0.5" texture-loader="src: ./textures/brick_mat.jpg"></a-box>
+      <a-entity id="dir-light" light="type: directional; color:#ffe6f4; intensity: 1" position="10 200 100"></a-entity>
+      <a-entity light="type:ambient; color:#666666"> </a-entity>
+
+      <a-sky transparent="true"></a-sky>
+    </a-scene>
+    <!-- <button id="enable-movement">Enable WSAD movement</button> -->
+  </body>
+
+  <script type="module" type="text/javascript">
+    // let button_wsad = document.querySelector('#enable-movement');
+
+    AFRAME.registerComponent('toggle-wsad', {
+      init: function () {
+        // Add a click event listener to the button
+        const camera = this.el;
+        const wasdControls = camera.components['wasd-controls'];
+        wasdControls.data.fly = true;
+        wasdControls.data.enabled = false;
+
+        button_wsad.addEventListener('click', () => {
+          // Get the camera element and the wasd-controls component
+
+          // Toggle the enabled state of the wasd-controls
+          wasdControls.data.enabled = !wasdControls.data.enabled;
+
+          // Display a message based on the state
+          if (wasdControls.data.enabled) {
+            console.log('WSAD movement is enabled');
+          } else {
+            console.log('WSAD movement is disabled');
+          }
+        });
+      },
+
+      update: function () {},
+    });
+
+    AFRAME.registerComponent('texture-loader', {
+      schema: {
+        src: {},
+        material_tex: {},
+        mesh: {},
+        texture: {},
+        normal: { type: 'boolean' },
+        normal_src: {},
+        wrap: { type: 'boolean', default: false },
+        repeat: { type: 'boolean', default: false },
+      },
+      init: function () {
+        // console.log('initialized');
+      },
+      update: function () {
+        const el = this.el;
+        console.dir(el);
+
+        this.data.texture = new THREE.TextureLoader().load(this.data.src);
+        this.data.texture.anisotropy = 16;
+        this.data.texture.minFilter = THREE.NearestFilter;
+        this.data.texture.maxFilter = THREE.NearestFilter;
+
+        this.data.material_tex = new THREE.MeshLambertMaterial({
+          map: this.data.texture,
+        });
+
+        this.data.mesh = el.getObject3D('mesh');
+        // console.log(this.data.mesh);
+        // console.log(el.object3D.children[0]);
+        // console.log(this.data.mesh === el.object3D.children[0]); // returns true
+
+        this.data.mesh.material = this.data.material_tex;
+
+        if (this.data.normal === true) {
+          //   console.log('normal true');
+          this.data.normal_map = new THREE.TextureLoader().load(this.data.normal_src);
+          this.data.mesh.material.normalMap = this.data.normal_map;
+          this.data.mesh.receiveShadow = true;
+        }
+
+        if (this.data.wrap === true && this.data.repeat === true) {
+          this.data.texture.wrapS = this.data.texture.wrapT = THREE.RepeatWrapping;
+          this.data.texture.repeat.set(10, 10);
+        }
+      },
+    });
+  </script>
+</html>
