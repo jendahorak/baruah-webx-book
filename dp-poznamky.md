@@ -72,3 +72,5 @@ Game Engines vs Three + Aframe
 
 - game engines inherently have physics systems in them (kinematics)
 - extensibility of Aframe due to others peoples work is good
+
+Via other libs written by other people.
